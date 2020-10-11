@@ -305,7 +305,7 @@ void third_task(float number)
 
 void forth_task(double number)
 {
-    int order[12] = { 0,1,1,1,1,1,1,1,1,1,1,1 };
+    int order[11] = { 0,1,1,1,1,1,1,1,1,1,1 };
     int sign_number, cnt;
     int d_cnt = 11;
     if (number < 0)
@@ -327,7 +327,7 @@ void forth_task(double number)
             cnt += 1;
             save /= 2;
             bool check = 1;
-            d_cnt = 11;
+            d_cnt = 10;
             while (check)
             {
                 if (order[d_cnt] == 0)
@@ -368,8 +368,8 @@ void forth_task(double number)
         }
     }
     d_cnt = 1;
-    int dec = 1000000000;
-    for (int i = 0; i < 12; i++)
+    int dec = 100000000;
+    for (int i = 0; i < 11; i++)
     {
         std::cout << order[i];
     }
