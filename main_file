@@ -153,33 +153,26 @@ void second_task(int number)
         }
         two_in_degree = 1073741824;
         cnt = 0;
-        number = save + 1;
+        number = save - 1;
         std::cout << "\nДополнительный код: " << sign_number << ' ';
-        if (number != 2)
+        while (two_in_degree)
         {
-            while (two_in_degree)
+            cnt += 1;
+            if (cnt % 8 == 0)
             {
-                cnt += 1;
-                    if (cnt % 8 == 0)
-                    {
-                        std::cout << ' ';
-                    }
-                if (number >= two_in_degree)
-                {
-                    std::cout << 0;
-                }
-                else
-                {
-                    std::cout << 1;
-                }
-                number %= two_in_degree;
-                two_in_degree /= 2;
+                std::cout << ' ';
             }
-        }
-        else
-        {
-            std::cout << "1111111 11111111 11111111 11111111";
-        }
+            if (number >= two_in_degree)
+            {
+                std::cout << 0;
+            }
+            else
+            {
+                std::cout << 1;
+            }
+            number %= two_in_degree;
+            two_in_degree /= 2;
+            }
     }
     std::cout << '\n';
 }
