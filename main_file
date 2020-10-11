@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 
 //Подпрограмма для прибавления к двоичному числу единицы
 int byte_plus(int number)
@@ -93,6 +94,7 @@ void second_task(int number)
     {
         sign_number = 0;
     }
+    int save = number;
     cnt = 0;
     //Тут выводится бит, отвечающий за знак числа, и сразу же отделяется его отступом
     std::cout << sign_number << ' ';
@@ -121,18 +123,77 @@ void second_task(int number)
         {
             std::cout << 0;
         }
-        //А затем мы присваем number 
+        //А затем мы присваем number остаток от деления на two_in_degree, a two_in_degree делим на 2
         number %= two_in_degree;
         two_in_degree /= 2;
+    }
+    if (sign_number == 1)
+    {
+        cnt = 0;
+        number = save;
+        std::cout << "\nОбратный код: " << sign_number << ' ';
+        two_in_degree = 1073741824;
+        while (two_in_degree)
+        {
+            cnt += 1;
+            if (cnt % 8 == 0)
+            {
+                std::cout << ' ';
+            }
+            if (number >= two_in_degree)
+            {
+                std::cout << 0;
+            }
+            else
+            {
+                std::cout << 1;
+            }
+            number %= two_in_degree;
+            two_in_degree /= 2;
+        }
+        two_in_degree = 1073741824;
+        cnt = 0;
+        number = save + 1;
+        std::cout << "\nДополнительный код: " << sign_number << ' ';
+        if (number != 2)
+        {
+            while (two_in_degree)
+            {
+                cnt += 1;
+                    if (cnt % 8 == 0)
+                    {
+                        std::cout << ' ';
+                    }
+                if (number >= two_in_degree)
+                {
+                    std::cout << 0;
+                }
+                else
+                {
+                    std::cout << 1;
+                }
+                number %= two_in_degree;
+                two_in_degree /= 2;
+            }
+        }
+        else
+        {
+            std::cout << "1111111 11111111 11111111 11111111";
+        }
     }
     std::cout << '\n';
 }
 
+//Третье задание: с дробным числом (float)
 void third_task(float number)
 {
-    float save = number;
+    //Переменная, обозначающая порядок
     unsigned int order;
+    //Переменная sign_number отвечает за знак числа, cnt - за то, в каком месте "запятая" числа (если она от 0 до 23)
     int sign_number, cnt;
+    //Переменная d_cnt - счётчик для массива
+    int d_cnt = 1;
+    //Условие на определение знака числа
     if (number < 0)
     {
         sign_number = 1;
@@ -143,10 +204,14 @@ void third_task(float number)
         sign_number = 0;
     }
     cnt = 0;
+    //Резервная переменная, равная number
+    float save = number;
     order = 1111111;
     std::cout << sign_number << ' ';
+    //Условие для определение порядка числа
     if (number >= 1)
     {
+        //Если модуль числа больше единицы, порядок (находящийся во 2 системе счисления), увеличивается на единицу
         while (save >= 1)
         {
             cnt += 1;
@@ -157,6 +222,7 @@ void third_task(float number)
     }
     else
     {
+        //Если модуль числа больше единицы, порядок (находящийся во 2 системе счисления), уменьшается на единицу
         while ((save < 1) and (order > 0))
         {
             cnt -= 1;
@@ -165,39 +231,55 @@ void third_task(float number)
         }
     }
     int dec = 1000000;
+    //Этот цикл дополняет нулями порядок до 8 цифр
     while (order < dec)
     {
         std::cout << 0;
         dec /= 10;
     }
     std::cout << order << ' ';
-    int z_part = number;
+    //Переменная z_part - целая часть переменной number
+    float z_part = floor(number);
+    //Переменная d_part - целая часть переменной number
     float d_part = number - z_part;
-    dec = 1;
-    long int byte_number = 0;
-    while (z_part)
+    float two_in_degree = 1;
+    d_cnt = 0;
+    //Алгоритм схож с тем, который используется в прошлой задаче, но немного изменён в связи с тем, что теперь число дробное
+    //В дробном числе нельзя использовать оператор %, так что я заменила эту операцию вычитанием
+    //В этом цикле находится максимальная степень числа 2, которая меньше целой части числа
+    while ((two_in_degree * 2) <= z_part)
     {
-        byte_number += (z_part % 2) * dec;
-        z_part /= 2;
-        dec *= 10;
+        two_in_degree *= 2;
     }
-    dec /= 10;
-    while (dec > 1)
+    //Затем она вычитается из целой части числа (в типе float первая единица не записывается (но подразумевается) для экономии памяти)
+    z_part -= two_in_degree;
+    two_in_degree /= 2;
+    //И начинается цикл, в котором вычисляется двоичное представления целой части числа
+    while ((two_in_degree >= 1) and (d_cnt < 23))
     {
-        byte_number %= dec;
-        dec /= 10;
-        if (byte_number >= dec)
+        if (z_part >= two_in_degree)
         {
             std::cout << 1;
+            z_part -= two_in_degree;
         }
         else
         {
             std::cout << 0;
         }
+        d_cnt += 1;
+        two_in_degree /= 2;
     }
-    std::cout << ' ';
+    //Тут могла бы быть запятая
+    if (d_cnt != 0)
+    {
+        std::cout << ' ';
+    }
+    //С целой частью закончено! Теперь приступаем к дробной
     if (cnt < 0)
     {
+        //Если изначально число меньше единицы, часть с вычислением целой части числа пропускается, значит надо дойти
+        //до состояния первой единицей. Дополнительное условие со счётчиком необходимо на случай, если вводится 0
+        //Без него при таком условии получился бы бесконечный цикл
         while (d_part < 1 and cnt < 0)
         {
             cnt += 1;
@@ -209,7 +291,9 @@ void third_task(float number)
             d_part -= 1;
         }
     }
-    while (cnt < 23)
+    d_cnt += 9;
+    //И дальше вычисляется дробная часть
+    while (d_cnt < 32)
     {
         d_part *= 2;
         if (d_part >= 1)
@@ -221,16 +305,16 @@ void third_task(float number)
         {
             std::cout << 0;
         }
-        cnt += 1;
+        d_cnt += 1;
     }
     std::cout << '\n';
 }
 
 void forth_task(double number)
 {
-    double save = number;
-    unsigned int order;
+    int order[12] = { 0,1,1,1,1,1,1,1,1,1,1,1 };
     int sign_number, cnt;
+    int d_cnt = 11;
     if (number < 0)
     {
         sign_number = 1;
@@ -241,7 +325,7 @@ void forth_task(double number)
         sign_number = 0;
     }
     cnt = 0;
-    order = 1111111;
+    double save = number;
     std::cout << sign_number << ' ';
     if (number >= 1)
     {
@@ -249,7 +333,21 @@ void forth_task(double number)
         {
             cnt += 1;
             save /= 2;
-            order = byte_plus(order);
+            bool check = 1;
+            d_cnt = 11;
+            while (check)
+            {
+                if (order[d_cnt] == 0)
+                {
+                    order[d_cnt] = 1;
+                    check = 0;
+                }
+                else
+                {
+                    order[d_cnt] = 0;
+                }
+                d_cnt -= 1;
+            }
         }
         cnt -= 1;
     }
@@ -259,35 +357,58 @@ void forth_task(double number)
         {
             cnt -= 1;
             save *= 2;
-            order = byte_minus(order);
+            bool check = 1;
+            d_cnt = 11;
+            while (check)
+            {
+                if (order[d_cnt] == 0)
+                {
+                    order[d_cnt] = 1;
+                }
+                else
+                {
+                    order[d_cnt] = 0;
+                    check = 0;
+                }
+                d_cnt -= 1;
+            }
         }
     }
-    std::cout << order << ' ';
-    int z_part = number;
-    float d_part = number - z_part;
-    int dec = 1;
-    long int byte_number = 0;
-    while (z_part)
+    d_cnt = 1;
+    int dec = 1000000000;
+    for (int i = 0; i < 12; i++)
     {
-        byte_number += (z_part % 2) * dec;
-        z_part /= 2;
-        dec *= 10;
+        std::cout << order[i];
     }
-    dec /= 10;
-    while (dec > 1)
+    std::cout << ' ';
+    double z_part = floor(number);
+    double d_part = number - z_part;
+    double two_in_degree = 1;
+    d_cnt = 0;
+    while ((two_in_degree * 2) <= z_part)
     {
-        byte_number %= dec;
-        dec /= 10;
-        if (byte_number >= dec)
+        two_in_degree *= 2;
+    }
+    z_part -= two_in_degree;
+    two_in_degree /= 2;
+    while ((two_in_degree >= 1) and (d_cnt < 52))
+    {
+        if (z_part >= two_in_degree)
         {
             std::cout << 1;
+            z_part -= two_in_degree;
         }
         else
         {
             std::cout << 0;
         }
+        d_cnt += 1;
+        two_in_degree /= 2;
     }
-    std::cout << ' ';
+    if (d_cnt != 0)
+    {
+        std::cout << ' ';
+    }
     if (cnt < 0)
     {
         while (d_part < 1 and cnt < 0)
@@ -301,7 +422,8 @@ void forth_task(double number)
             d_part -= 1;
         }
     }
-    while (cnt < 23)
+    d_cnt += 9;
+    while (d_cnt < 64)
     {
         d_part *= 2;
         if (d_part >= 1)
@@ -313,7 +435,7 @@ void forth_task(double number)
         {
             std::cout << 0;
         }
-        cnt += 1;
+        d_cnt += 1;
     }
     std::cout << '\n';
 }
