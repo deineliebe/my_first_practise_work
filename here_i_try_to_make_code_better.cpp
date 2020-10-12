@@ -223,7 +223,8 @@ void third_task(float number)
             order = byte_minus(order);
         }
     }
-    int dec = 1000000;
+    //Исправлено после первой рецензии
+    int dec = 10000000;
     //Этот цикл дополняет нулями порядок до 8 цифр
     while (order < dec)
     {
